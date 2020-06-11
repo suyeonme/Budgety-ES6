@@ -1,6 +1,7 @@
 //////////////////////////////////////
 // Budget Controller
 const budgetController = (function() {
+
     const Expense = function(id, description, value) {
         this.id = id;
         this.description = description;
@@ -21,13 +22,16 @@ const budgetController = (function() {
         totals: {
             inc: 0,
             exp: 0
-        }
+        },
+        budget: 0,
+        percentage: -1
     };
 
     const calculateTotal = function(type) {
         let sum = data.allItems[type].reduce((prev,cur) => prev + cur.value, 0);
         data.totals[type] = sum;
     };
+    
 
     return {
         addItem: function(type, des, val) {
@@ -75,14 +79,20 @@ const budgetController = (function() {
                 totalExp: data.totals.exp,
                 percentage: data.percentage
             };
+        },
+
+        testing: function() {
+            console.log(data);
         }
-    }
+    };
+
 })();
 
 
 //////////////////////////////////////
 // UI Controller
 const UIController = (function() {
+
     const DOMStrings = {
         inputType: ".add__type",
         inputDescription: ".add__description",
@@ -97,11 +107,8 @@ const UIController = (function() {
         container: ".container"
     };
 
+    
     return {
-        getDOMString: function() {
-            return DOMStrings;
-        },
-
         getInput: function() {
             return {
                 type: document.querySelector(DOMStrings.inputType).value,                       // inc or exp
@@ -165,6 +172,10 @@ const UIController = (function() {
             } else {
                 document.querySelector(DOMStrings.percentLabel).textContent = '---';
             }
+        },
+
+        getDOMString: function() {
+            return DOMStrings;
         }
     };
 })();
@@ -173,6 +184,7 @@ const UIController = (function() {
 //////////////////////////////////////
 //  Controller
 const controller = (function(budgetCtrl, UICtrl) {
+
     const setupEventListener = function() {
         const DOM = UICtrl.getDOMString();
 
@@ -181,7 +193,10 @@ const controller = (function(budgetCtrl, UICtrl) {
         document.addEventListener('keypress', e => {
             if (e.keyCode === 13 || e.which === 13) ctrlAddItem();
         });
+
+        document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
     };
+
 
     const updateBudget = function() {
         // Calculate the budget
@@ -194,25 +209,47 @@ const controller = (function(budgetCtrl, UICtrl) {
         UICtrl.displayBudget(budget); 
     };
 
+
+
     const ctrlAddItem = function() {
         let input, newItem;
 
         // Get input data 
         input = UICtrl.getInput();
 
-        // Add the item to the budget controller
-        newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+        if (input.description !== '' && !isNaN(input.value) && input.value > 0) {
 
-        // Add the item to the UI 
-        UICtrl.addListItem(newItem, input.type);
+            // Add the item to the budget controller
+            newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
-        // Clear input field
-        UICtrl.clearField();
+            // Add the item to the UI 
+            UICtrl.addListItem(newItem, input.type);
+
+            // Clear input field
+            UICtrl.clearField();
             
-        // Calculate and update the budget
-        updateBudget();
-        
-    }
+            // Calculate and update the budget
+            updateBudget();
+        }
+    };
+
+    const ctrlDeleteItem = event => {
+        let itemID, splitID, type, ID;
+        itemID = console.log(event.target.parentNode.parentNode.parentNode.parentNode.id);
+
+        if (itemID) {
+            splitID = itemID.split('-');
+            type = splitID[0];
+            ID = splitID[1];
+
+            // Delete item from budget controller
+
+            // Delete item from UI
+
+            // Update and display new budget
+            
+        };
+    };
 
     return {
         init: function() {
@@ -231,3 +268,7 @@ const controller = (function(budgetCtrl, UICtrl) {
 controller.init();
 
 
+
+
+// second iteration of budgety app. I rebuild using javascript ES6 features.
+// Budgety-ES6
