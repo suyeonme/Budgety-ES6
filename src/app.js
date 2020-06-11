@@ -65,9 +65,16 @@ const controller = (function(budgetCtrl, UICtrl) {
             
         // Calculate and update the budget
         
+    }
+
+    return {
+        init: function() {
+            console.log('Application has started.');
+            setupEventListener();
         }
+    };
 })(budgetController,UIController);
 
-
+controller.init();
 
 
