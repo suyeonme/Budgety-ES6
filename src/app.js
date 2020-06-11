@@ -153,6 +153,18 @@ const UIController = (function() {
             const fields = Array.from(document.querySelectorAll(DOMStrings.inputDescription + ',' + DOMStrings.inputValue));
             fields.forEach(cur => cur.value = '');
             fields[0].focus();
+        },
+
+        displayBudget: function(obj) {
+            document.querySelector(DOMStrings.budgetLabel).textContent = obj.budget;
+            document.querySelector(DOMStrings.incomeLable).textContent = obj.totalInc;
+            document.querySelector(DOMStrings.expenseLabel).textContent = obj.totalExp;
+
+            if (obj.percentage > 0) {
+                document.querySelector(DOMStrings.percentLabel).textContent = obj.percentage + '%';
+            } else {
+                document.querySelector(DOMStrings.percentLabel).textContent = '---';
+            }
         }
     };
 })();
@@ -205,6 +217,12 @@ const controller = (function(budgetCtrl, UICtrl) {
     return {
         init: function() {
             console.log('Application has started.');
+            UICtrl.displayBudget({
+                budget: 0,
+                totalInc: 0,
+                totalExp: 0,
+                percentage: 0
+            });
             setupEventListener();
         }
     };
