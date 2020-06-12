@@ -6,6 +6,19 @@ const budgetController = (function() {
         this.id = id;
         this.description = description;
         this.value = value;
+        this.percentage = -1;
+    };
+
+    Expense.prototype.calcPercentage = function(totalIncome) {
+        if (totalIncome > 0) {
+            this.percentage = Math.round((this.value / totalIncome) * 100);
+        } else {
+            this.percentage = -1;
+        };
+    };
+
+    Expense.prototype.getPercentage = function() {
+        return this.percentage;
     };
 
     const Income = function(id, description, value) {
@@ -78,6 +91,15 @@ const budgetController = (function() {
             };
         },
 
+        calculatePercentages: function() {
+            data.allItems.exp.forEach(cur => cur.calcPercentage(data.totals.inc));
+        },
+
+        getPercentages: function() {
+            const allPercentage = data.allItems.exp.map(cur => cur.getPercentage());
+            return allPercentage;
+        },
+
         getBudget: function() {
             return {
                 budget: data.budget,
@@ -110,7 +132,8 @@ const UIController = (function() {
         incomeLable: ".budget__income--value",
         expenseLabel: ".budget__expenses--value",
         percentLabel: ".budget__expenses--percentage",
-        container: ".container"
+        container: ".container",
+        expensesPercLabel: ".item__percentage"
     };
 
     
@@ -185,6 +208,13 @@ const UIController = (function() {
             }
         },
 
+        displayPerc: function(percentages) {
+            const fields = document.querySelectorAll(DOMStrings.expensesPercLabel);
+            Array.from(fields).forEach((cur, index) => {
+                percentages[index] > 0 ? cur.textContent = percentages[index] + '%' : cur.textContent = '---';
+            });
+        },
+
         getDOMString: function() {
             return DOMStrings;
         }
@@ -193,7 +223,7 @@ const UIController = (function() {
 
 
 //////////////////////////////////////
-//  Controller
+//  Global App Controller
 const controller = (function(budgetCtrl, UICtrl) {
 
     const setupEventListener = function() {
@@ -221,6 +251,17 @@ const controller = (function(budgetCtrl, UICtrl) {
     };
 
 
+    const updatePercentage = function() {
+        // Calculate percentage
+        budgetCtrl.calculatePercentages();
+        
+        // Read percentage from budget controller
+        const percentages = budgetCtrl.getPercentages();
+
+        // Display new percentage on UI
+        UICtrl.displayPerc(percentages);
+    };
+
 
     const ctrlAddItem = function() {
         let input, newItem;
@@ -241,6 +282,9 @@ const controller = (function(budgetCtrl, UICtrl) {
             
             // Calculate and update the budget
             updateBudget();
+
+            // Calculate and update percentage
+            updatePercentage();
         }
     };
 
@@ -261,6 +305,9 @@ const controller = (function(budgetCtrl, UICtrl) {
 
             // Update and display new budget
             updateBudget();
+
+            // Calculate and update percentage
+            updatePercentage();
         };
     };
 
