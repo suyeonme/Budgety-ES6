@@ -55,6 +55,12 @@ const budgetController = (function() {
             return newItem;
         },
 
+        deleteItem: function(type, id) {
+            const ids = data.allItems[type].map(cur => cur.id);
+            const index = ids.indexOf(id);
+            if (index !== -1) data.allItems[type].splice(index, 1);
+        },
+
         CalculateBudget: function() {
 
             // Calculate total income and expenses
@@ -235,14 +241,15 @@ const controller = (function(budgetCtrl, UICtrl) {
 
     const ctrlDeleteItem = event => {
         let itemID, splitID, type, ID;
-        itemID = console.log(event.target.parentNode.parentNode.parentNode.parentNode.id);
+        itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
 
         if (itemID) {
             splitID = itemID.split('-');
             type = splitID[0];
-            ID = splitID[1];
+            ID = parseInt(splitID[1]);
 
             // Delete item from budget controller
+            budgetCtrl.deleteItem(type, ID);
 
             // Delete item from UI
 
@@ -270,5 +277,3 @@ controller.init();
 
 
 
-// second iteration of budgety app. I rebuild using javascript ES6 features.
-// Budgety-ES6
