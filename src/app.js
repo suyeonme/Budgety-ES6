@@ -247,6 +247,12 @@ const UIController = (function() {
             document.querySelector(DOMStrings.dateLabel).textContent = months[month] + ' ' + year;
         },
 
+        changeType: function() {
+            const fields = document.querySelectorAll(DOMStrings.inputType + ',' + DOMStrings.inputDescription + ',' + DOMStrings.inputValue);
+            Array.from(fields).forEach(cur => cur.classList.toggle('red-focus'));
+            document.querySelector(DOMStrings.inputBtn).classList.toggle('red');
+        },
+
         getDOMString: function() {
             return DOMStrings;
         }
@@ -261,13 +267,13 @@ const controller = (function(budgetCtrl, UICtrl) {
     const setupEventListener = function() {
         const DOM = UICtrl.getDOMString();
 
-        document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
-
         document.addEventListener('keypress', e => {
             if (e.keyCode === 13 || e.which === 13) ctrlAddItem();
         });
 
+        document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
         document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+        document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changeType);
     };
 
 
